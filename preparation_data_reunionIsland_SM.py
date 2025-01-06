@@ -17,6 +17,6 @@ fig, ax = plt.subplots()
 ax.imshow(fct.threshSAR(image_SM))
 
 
-np.savez('/scratcht/fweissge/cours_FRS/reunion_island_SM', image = image_SM[6000:22500, :8000])
+np.savez('/scratcht/fweissge/cours_FRS/reunion_island_SM', image = image_SM[8000:12000, 2000:8000])
 
 plt.show()

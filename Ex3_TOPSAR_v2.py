@@ -42,6 +42,7 @@ ax.imshow(sard.threshSAR(image_1[0]))
 image_surech_deramp = descri_SENT_1.sureech_avec_deramp(image_1, 1, 12)
 image_surech_reramp = descri_SENT_1.sureech_ramp(image_1, 1, 12)
 
+
 fig, ax = plt.subplots(1,2)
 ax[0].imshow(np.abs(np.fft.fftshift(np.fft.fft2(image_surech_deramp[0]))))
 ax[1].imshow(np.abs(np.fft.fftshift(np.fft.fft2(image_surech_reramp[0]))))
@@ -133,5 +134,6 @@ ax[0].imshow(sard.threshSAR(zoom_phase_surech))
 ax[1].imshow(np.abs(np.fft.fftshift(np.fft.fft2(zoom_phase_surech))))
 
 
+np.savez('/scratcht/fweissge/cours_FRS/reunion_island_IW_ramping_deramping.npz', image_IW= image_1[0], image_IW_deramp = image_surech_deramp[0], image_IW_reramp = image_surech_reramp[0] )
 
 plt.show()

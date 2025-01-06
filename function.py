@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from scipy import signal
+from scipy.interpolate import RegularGridInterpolator
 
 def boxcarFilter(imIn,windowShape):
     '''
@@ -156,3 +157,53 @@ def imCompareSameDynamicMax(im1,im2,threshMax=3,exp=1):
     im_rgb[:,:,2] = im2
     
     return im_rgb
+
+def oversampling_linear(image_in, factor_x, factor_y, direction):
+
+    x = np.arange(image_in.shape[1])
+    y = np.arange(image_in.shape[0])
+    interp_real = RegularGridInterpolator((y,x), np.real(image_in[:,:]))
+    interp_imag = RegularGridInterpolator((y,x), np.imag(image_in[:,:]))
+
+    if direction == 'azimuth':
+
+        if factor_y > 0:
+
+            yy = np.arange(image_in.shape[0]-1, step = 1/factor_y)
+            XX,YY = np.meshgrid(x,yy)
+            test_points = np.array([YY.ravel(), XX.ravel()]).T
+            im_real = interp_real(test_points, method='linear').reshape(yy.shape[0], x.shape[0])
+            im_imag = interp_imag(test_points, method='linear').reshape(yy.shape[0], x.shape[0])
+        else: 
+            raise ValueError('the factor_y should be superior to 0')
+
+
+    elif direction == 'range':
+
+        if factor_x > 0:
+            xx = np.arange(image_in.shape[1]-1, step = 1/factor_x)
+            XX,YY = np.meshgrid(xx,y)
+            test_points = np.array([YY.ravel(), XX.ravel()]).T
+            im_real = interp_real(test_points, method='linear').reshape(y.shape[0], xx.shape[0])
+            im_imag = interp_imag(test_points, method='linear').reshape(y.shape[0], xx.shape[0])
+        else: 
+            raise ValueError('the factor_x should be superior to 0')
+        
+    elif direction == 'both':
+
+        if (factor_x > 0)&(factor_y > 0):
+            xx = np.arange(image_in.shape[1]-1, step = 1/factor_x)
+            yy = np.arange(image_in.shape[0]-1, step = 1/factor_y)
+            XX,YY = np.meshgrid(xx,yy)
+            test_points = np.array([YY.ravel(), XX.ravel()]).T
+            im_real = interp_real(test_points, method='linear').reshape(yy.shape[0], xx.shape[0])
+            im_imag = interp_imag(test_points, method='linear').reshape(yy.shape[0], xx.shape[0])
+        else: 
+            raise ValueError('the factor_x and factor_y should be superior to 0')
+
+
+    image_out = im_real + 1j*im_imag
+
+
+
+    return image_out
